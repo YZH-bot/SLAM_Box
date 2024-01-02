@@ -1,0 +1,15 @@
+<launch>
+    <node pkg="rviz"  type="rviz"  name="ndt_odometry"  args="-d $(find icp_odometry)/rviz/front_end.rviz"></node>
+
+    <node pkg="icp_odometry"  type="loosely_lio_node"  name="loosely_lio_node"  output="screen">
+        <!-- <rosparam param="cloud_topic">"/kitti_velo"</rosparam> -->
+        <!-- <rosparam param="imu_topic">"/imu_correct"</rosparam> -->
+        <!-- <rosparam param="cloud_topic">"/points_raw"</rosparam> -->
+        <rosparam param="imu_topic">"/imu/data"</rosparam>
+        <rosparam param="cloud_topic">"/velodyne_points_0"</rosparam>
+        <rosparam param="save_global_map">true</rosparam>
+        <rosparam param="global_map_save_path">"/home/robot-nuc12/catkin_ws/src/slam/simple_icp/icp_odometry/data/ulhk/map.pcd"</rosparam>
+    </node>
+    
+    <!-- <node pkg="icp_odometry"  type="gnss_data_node"  name="gnss_data_node"  output="screen"></node> -->
+</launch>
