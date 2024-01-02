@@ -40,18 +40,22 @@
     <tr>
       <th rowspan="3" scope="rowgroup">ulhk</th>
       <th scope="row">ndt_lo</th>
-      <td> <p align="center"><img src="data/ndt_lo/ulhk/global_map.png" alt="animated" height="400" /></p> </td>
-      <td> <p align="center"><img src="data/ndt_lo/ulhk/drift.png" alt="animated" height="350" /></p> </td>
+      <td> <p align="center"><img src="data/ndt_lo/ulhk/global_map.png" alt="animated" height="200" /></p> </td>
+      <td> <p align="center"><img src="data/ndt_lo/ulhk/drift.png" alt="animated" height="150" /></p> </td>
     </tr>
     <tr>
       <th scope="row">loosely_lio</th>
-      <td> <p align="center"><img src="data/loose_lio/ulhk/global_map.png" alt="animated" height="400" /></p> </td>
-      <td> <p align="center"><img src="data/loose_lio/ulhk/drift.png" alt="animated" height="400" /></p> </td>
+      <td> <p align="center"><img src="data/loose_lio/ulhk/global_map.png" alt="animated" height="200" /></p> </td>
+      <td> <p align="center"><img src="data/loose_lio/ulhk/drift.png" alt="animated" height="200" /></p> </td>
     </tr>
     <tr>
       <th scope="row">dlo</th>
-      <td> <p align="center"><img src="data/dlo/ulhk.png" alt="animated" height="400" /></p> </td>
-      <td> <p align="center"><img src="data/dlo/little_drift.png" alt="animated" height="350" /></p> </td>
+      <td> <p align="center"><img src="data/dlo/ulhk.png" alt="animated" height="200" /></p> </td>
+      <td> <p align="center"><img src="data/dlo/little_drift.png" alt="animated" height="150" /></p> </td>
     </tr>
   </tbody>
 </table>
+
+## Reference
+
+**direct_lidar_odometry (dlo)**: [**Code**: https://github.com/vectr-ucla/direct_lidar_odometry](https://github.com/vectr-ucla/direct_lidar_odometry)
