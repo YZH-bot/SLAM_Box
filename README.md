@@ -1,4 +1,4 @@
-# SLAM Box
+# SLAM_Box
 
 ## 1. 纯ndt里程计
 基于手写的多线程ndt匹配算法实现简单的里程计
@@ -58,4 +58,4 @@
 
 ## Reference
 
-**direct_lidar_odometry (dlo)**: [**Code**: https://github.com/vectr-ucla/direct_lidar_odometry](https://github.com/vectr-ucla/direct_lidar_odometry)
+**direct_lidar_odometry (dlo)** [**Code**: https://github.com/vectr-ucla/direct_lidar_odometry](https://github.com/vectr-ucla/direct_lidar_odometry)

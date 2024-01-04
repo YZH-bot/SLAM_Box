@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(icp_odometry)
+project(slam_box)
 
 SET(CMAKE_BUILD_TYPE "Release")
 SET(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall")
