@@ -1,7 +1,7 @@
 <launch>
-    <node pkg="rviz"  type="rviz"  name="ndt_odometry"  args="-d $(find icp_odometry)/rviz/front_end.rviz"></node>
+    <node pkg="rviz"  type="rviz"  name="ndt_odometry"  args="-d $(find slam_box)/rviz/front_end.rviz"></node>
 
-    <node pkg="icp_odometry"  type="loosely_lio_node"  name="loosely_lio_node"  output="screen">
+    <node pkg="slam_box"  type="loosely_lio_node"  name="loosely_lio_node"  output="screen">
         <!-- <rosparam param="cloud_topic">"/kitti_velo"</rosparam> -->
         <!-- <rosparam param="imu_topic">"/imu_correct"</rosparam> -->
         <!-- <rosparam param="cloud_topic">"/points_raw"</rosparam> -->

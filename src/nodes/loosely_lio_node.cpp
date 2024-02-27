@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
     // 初始化 lio
     Odometry::loosely_lio::Options options;
     Odometry::loosely_lio lio(options);
-    lio.Init("/home/robot-nuc12/catkin_ws/src/slam/simple_icp/icp_odometry/config/velodyne_ulhk.yaml");
+    lio.Init("/home/robot-nuc12/catkin_ws/src/slam/simple_icp/slam_box/config/velodyne_ulhk.yaml");
 
     ros::Rate rate(10);
     while (ros::ok())

@@ -24,8 +24,8 @@ include_directories(/usr/local/include/eigen3)
 set(Sophus_LIBRARIES libSophus.so)
 
 # GNSS
-find_package (GeographicLib REQUIRED)
-include_directories(${GeographicLib_INCLUDE_DIRS})
+# find_package (GeographicLib REQUIRED)
+# include_directories(${GeographicLib_INCLUDE_DIRS})
 
 find_package(Glog)
 
