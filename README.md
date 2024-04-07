@@ -268,6 +268,7 @@ bool PoseSE3Parameterization::ComputeJacobian(const double *x, double *jacobian)
 
 [ceres::LocalParameterization](https://blog.csdn.net/weixin_43991178/article/details/100532618)
 [四元数+平移的表示方式](https://zhuanlan.zhihu.com/p/545458473)
+[FLOAM推导，建议看论文，和代码基本一致](https://zhuanlan.zhihu.com/p/428975763)
 ## Reference
 
 **direct_lidar_odometry (dlo)** [**Code**: https://github.com/vectr-ucla/direct_lidar_odometry](https://github.com/vectr-ucla/direct_lidar_odometry)
