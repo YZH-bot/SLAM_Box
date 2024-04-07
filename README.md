@@ -265,8 +265,8 @@ bool PoseSE3Parameterization::ComputeJacobian(const double *x, double *jacobian)
     return true;
 }
 ```
-
-[ceres::LocalParameterization](https://blog.csdn.net/weixin_43991178/article/details/100532618)
+[Ceres::Problem](https://blog.csdn.net/weixin_43991178/article/details/100532618)
+[Ceres::LocalParameterization](https://blog.csdn.net/weixin_43991178/article/details/100532618)
 [四元数+平移的表示方式](https://zhuanlan.zhihu.com/p/545458473)
 [FLOAM推导，建议看论文，和代码基本一致](https://zhuanlan.zhihu.com/p/428975763)
 [四元数矩阵与 so(3) 左右雅可比](https://zhuanlan.zhihu.com/p/35041587)
