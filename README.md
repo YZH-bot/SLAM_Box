@@ -1,5 +1,19 @@
 # SLAM_Box
 
+- [SLAM\_Box](#slam_box)
+  - [1. 纯ndt里程计](#1-纯ndt里程计)
+  - [2. 基于ESKF的松耦合里程计](#2-基于eskf的松耦合里程计)
+  - [SLAM trick](#slam-trick)
+    - [Ceres构建SLAM优化问题](#ceres构建slam优化问题)
+      - [1. ceres 构建SLAM优化问题](#1-ceres-构建slam优化问题)
+      - [2. ceres如何定义自己的cost函数](#2-ceres如何定义自己的cost函数)
+      - [3. 自定义优化变量](#3-自定义优化变量)
+    - [g2o构建SLAM优化问题](#g2o构建slam优化问题)
+    - [GTSAM 构建SLAM优化问题](#gtsam-构建slam优化问题)
+      - [GTSAM 如何自定义边](#gtsam-如何自定义边)
+      - [以SC-DLO后端优化为例](#以sc-dlo后端优化为例)
+  - [Reference](#reference)
+
 ## 1. 纯ndt里程计
 基于手写的多线程ndt匹配算法实现简单的里程计
 <table>
@@ -58,7 +72,8 @@
 
 ## SLAM trick
 
-### 1. ceres 构建SLAM优化问题
+### Ceres构建SLAM优化问题
+#### 1. ceres 构建SLAM优化问题
 - 定义损失函数：`ceres::LossFunction`（以`ceres::HuberLoss(0.1)`函数为例）
 - 定义优化问题：`ceres::Problem`
 - 给问题添加参数块：`problem.AddParameterBlock(parameters, 7, new PoseSE3Parameterization());`，**其中**，`PoseSE3Parameterization()`可以是自定义参数类型，见3.小节；
@@ -88,7 +103,7 @@
         }
 ```
 
-### 2. ceres如何定义自己的cost函数
+#### 2. ceres如何定义自己的cost函数
 以线点代价函数`EdgeAnalyticCostFunction`为例：
 - 继承`ceres::SizedCostFunction<1, 7>`（如果参数块的维度以及残差向量的维度能够在编译时确定，可以使用`SizedCostFunction`类,与CostFunction类相比，SizedCostFunction类通过模板参数确定子参数块的数量、每个子参数块中的参数数量、残差数量，因此，用户只需要override（重写）Evaluate()函数即可，不需要通过调用其他成员函数来指定各参数维度。）；
 - `EdgeAnalyticCostFunction`包括自己的成员，需要重新定义构造函数进行初始化；
@@ -149,7 +164,7 @@ bool EdgeAnalyticCostFunction::Evaluate(double const *const *parameters, double 
 
 [Ceres::CostFunction](https://blog.csdn.net/m0_37829462/article/details/128476121)
 
-## 3. 自定义优化变量
+#### 3. 自定义优化变量
 LocalParameterization类的作用是解决非线性优化中的过参数化问题。所谓过参数化，即待优化参数的实际自由度小于参数本身的自由度。例如在SLAM中，当采用四元数表示位姿时，由于四元数本身的约束（模长为1），实际的自由度为3而非4。此时，若直接传递四元数进行优化，冗余的维数会带来计算资源的浪费，需要使用Ceres预先定义的QuaternionParameterization对优化参数进行重构。LocalParaneterization本身是一个虚基类，用户可以自行定义自己需要使用的子类，或使用Ceres预先定义好的子类。
 ```C++
 class LocalParameterization {
@@ -220,6 +235,7 @@ bool QuaternionParameterization::ComputeJacobian(const double* x,
   return true;
 }
 ```
+**FLOAM 中的实现**
 - FLOAM中的自定义参数为7维，前四维为四元数，后三位为平移（将A-LOAM的自动求导改为了解析求导）：
 ```C++
 class PoseSE3Parameterization : public ceres::LocalParameterization {
@@ -265,11 +281,165 @@ bool PoseSE3Parameterization::ComputeJacobian(const double *x, double *jacobian)
     return true;
 }
 ```
-[Ceres::Problem](https://blog.csdn.net/weixin_43991178/article/details/100532618)
-[Ceres::LocalParameterization](https://blog.csdn.net/weixin_43991178/article/details/100532618)
-[四元数+平移的表示方式](https://zhuanlan.zhihu.com/p/545458473)
-[FLOAM推导，建议看论文，和代码基本一致](https://zhuanlan.zhihu.com/p/428975763)
-[四元数矩阵与 so(3) 左右雅可比](https://zhuanlan.zhihu.com/p/35041587)
+[Ceres::Problem](https://blog.csdn.net/weixin_43991178/article/details/100532618)<br>
+[Ceres::LocalParameterization](https://blog.csdn.net/weixin_43991178/article/details/100532618)<br>
+[四元数+平移的表示方式](https://zhuanlan.zhihu.com/p/545458473)<br>
+[FLOAM推导，建议看论文，和代码基本一致](https://zhuanlan.zhihu.com/p/428975763)<br>
+[四元数矩阵与 so(3) 左右雅可比](https://zhuanlan.zhihu.com/p/35041587)<br>
+
+### g2o构建SLAM优化问题
+
+### GTSAM 构建SLAM优化问题
+#### GTSAM 如何自定义边
+```C++
+class UnaryFactor : public NoiseModelFactor1<Pose2>
+{
+    // 测量值，假设为2维
+    double mx_, my_;
+
+public:
+    // 简称 for a smart pointer to a factor
+    typedef boost::shared_ptr<UnaryFactor> shared_ptr;
+
+    // 初始化需要 variable key（即索引）, the (X, Y) measurement value（测量值）, and the noise model（噪声项）
+    UnaryFactor(Key j, double x, double y, const SharedNoiseModel &model) : NoiseModelFactor1<Pose2>(model, j), mx_(x), my_(y) {} // info: NoiseModelFactor1 初始化的是继承过来的父类
+
+    ~UnaryFactor() override {}
+
+    // info: 继承 NoiseModelFactor1 必须重载两个函数:
+    // info: 第一个是 evaluateError: 计算并返回残差, 并且计算雅可比矩阵
+    Vector evaluateError(const Pose2 &q, boost::optional<Matrix &> H = boost::none) const override
+    {
+        // The measurement function for a GPS-like measurement h(q) which predicts the measurement (m) is h(q) = q, q = [qx qy qtheta]
+        // The error is then simply calculated as E(q) = h(q) - m:
+        // error_x = q.x - mx
+        // error_y = q.y - my
+        // Node's orientation reflects in the Jacobian, in tangent space this is equal to the right-hand rule rotation matrix
+        // H =  [ cos(q.theta)  -sin(q.theta) 0 ]
+        //      [ sin(q.theta)   cos(q.theta) 0 ]
+        const Rot2 &R = q.rotation();
+        if (H)
+            (*H) = (gtsam::Matrix(2, 3) << R.c(), -R.s(), 0.0, R.s(), R.c(), 0.0).finished(); // ?: 不应该是单位阵吗
+        return (Vector(2) << q.x() - mx_, q.y() - my_).finished();
+    }
+
+    // info: 第二个函数是 clone: 允许因子被拷贝，默认拷贝构造函数
+    gtsam::NonlinearFactor::shared_ptr clone() const override
+    {
+        return boost::static_pointer_cast<gtsam::NonlinearFactor>(
+            gtsam::NonlinearFactor::shared_ptr(new UnaryFactor(*this)));
+    }
+};
+
+int main(int argc, char const *argv[])
+{
+    // info: 1. 构建图并添加因子
+    NonlinearFactorGraph graph;
+
+    // info: 2a. 添加里程计因子
+    auto odomNoise = noiseModel::Diagonal::Sigmas(Vector3(0.2, 0.2, 0.1));
+    graph.emplace_shared<BetweenFactor<Pose2>>(1, 2, Pose2(2.0, 0.0, 0.0), odomNoise);
+    graph.emplace_shared<BetweenFactor<Pose2>>(2, 3, Pose2(2.0, 0.0, 0.0), odomNoise);
+
+    // info: 2b. 添加自定义 gps 测量
+    auto unaryNoise = noiseModel::Diagonal::Sigmas(Vector2(0.1, 0.1));
+    graph.emplace_shared<UnaryFactor>(1, 0.0, 0.0, unaryNoise);
+    graph.emplace_shared<UnaryFactor>(2, 2.0, 0.0, unaryNoise);
+    graph.emplace_shared<UnaryFactor>(3, 4.0, 0.0, unaryNoise);
+    graph.print("\nFactor Graph:\n"); // print
+
+    // info: 3. 初始化
+    Values initialEstimation;
+    initialEstimation.insert(1, Pose2(0.5, 0.1, 0.2));
+    initialEstimation.insert(2, Pose2(2.3, 0.1, -0.2));
+    initialEstimation.insert(3, Pose2(4.5, 0.1, 0.2));
+    initialEstimation.print("\nInitial Estimate:\n"); // print
+
+    // info: 4. 开始优化
+    LevenbergMarquardtOptimizer optimizer(graph, initialEstimation);
+    Values result = optimizer.optimize();
+    result.print("Final Result:\n");
+
+    return 0;
+}
+```
+
+#### 以SC-DLO后端优化为例
+- 初始化
+```C++
+gtsam::NonlinearFactorGraph gtSAMgraph;   // 创建一个空的graph
+bool gtSAMgraphMade = false;
+gtsam::Values initialEstimate;
+gtsam::ISAM2 *isam;
+gtsam::Values isamCurrentEstimate;
+```
+- 初始化噪声项
+```C++
+void initNoises(void)
+{
+    gtsam::Vector priorNoiseVector6(6);
+    priorNoiseVector6 << 1e-12, 1e-12, 1e-12, 1e-12, 1e-12, 1e-12;
+    priorNoise = noiseModel::Diagonal::Variances(priorNoiseVector6);
+
+    gtsam::Vector odomNoiseVector6(6);
+    // odomNoiseVector6 << 1e-4, 1e-4, 1e-4, 1e-4, 1e-4, 1e-4;
+    odomNoiseVector6 << 1e-6, 1e-6, 1e-6, 1e-4, 1e-4, 1e-4;
+    odomNoise = noiseModel::Diagonal::Variances(odomNoiseVector6);
+
+    double loopNoiseScore = 0.5;         // constant is ok...
+    // double loopNoiseScore = 1e-4;         // constant is ok...
+    gtsam::Vector robustNoiseVector6(6); // gtsam::Pose3 factor has 6 elements (6D)
+    robustNoiseVector6 << loopNoiseScore, loopNoiseScore, loopNoiseScore, loopNoiseScore, loopNoiseScore, loopNoiseScore;
+    robustLoopNoise = gtsam::noiseModel::Robust::Create(
+        gtsam::noiseModel::mEstimator::Cauchy::Create(1), // optional: replacing Cauchy by DCS or GemanMcClure is okay but Cauchy is empirically good.
+        gtsam::noiseModel::Diagonal::Variances(robustNoiseVector6));
+
+    double bigNoiseTolerentToXY = 1000000000.0;                                              // 1e9
+    double gpsAltitudeNoiseScore = 250.0;                                                    // if height is misaligned after loop clsosing, use this value bigger
+    gtsam::Vector robustNoiseVector3(3);                                                     // gps factor has 3 elements (xyz)
+    robustNoiseVector3 << bigNoiseTolerentToXY, bigNoiseTolerentToXY, gpsAltitudeNoiseScore; // means only caring altitude here. (because LOAM-like-methods tends to be asymptotically flyging)
+    robustGPSNoise = gtsam::noiseModel::Robust::Create(
+        gtsam::noiseModel::mEstimator::Cauchy::Create(1), // optional: replacing Cauchy by DCS or GemanMcClure is okay but Cauchy is empirically good.
+        gtsam::noiseModel::Diagonal::Variances(robustNoiseVector3));
+
+} // initNoises
+```
+- 添加因子
+```C++
+  // 里程计因子
+  gtsam::Pose3 relPose = poseFrom.between(poseTo);    // info: 相对位姿因子
+  gtSAMgraph.add(gtsam::BetweenFactor<gtsam::Pose3>(prev_node_idx, curr_node_idx, relPose, odomNoise));
+
+  // 回环因子
+  gtsam::Pose3 relative_pose = relative_pose_optional.value();
+  gtSAMgraph.add(gtsam::BetweenFactor<gtsam::Pose3>(prev_node_idx, curr_node_idx, relative_pose, robustLoopNoise));
+
+  // GPS因子
+  gtsam::Point3 gpsConstraint(recentOptimizedX, recentOptimizedY, curr_altitude_offseted); // in this example, only adjusting altitude (for x and y, very big noises are set)
+  gtSAMgraph.add(gtsam::GPSFactor(curr_node_idx, gpsConstraint, robustGPSNoise)); // ?
+```
+
+- 图优化
+```C++
+void runISAM2opt(void)
+{
+    // called when a variable added
+    // info: 更新优化, 每次新增因子后，进行优化问题更新
+    isam->update(gtSAMgraph, initialEstimate);
+    isam->update(); // ?:
+
+    // info: 清空增量容器
+    gtSAMgraph.resize(0);   // ?:
+    initialEstimate.clear();
+
+    // info: 优化问题求解
+    isamCurrentEstimate = isam->calculateEstimate();
+    // info: 更新优化之后的位姿
+    updatePoses();
+}
+```
+
+
 ## Reference
 
 **direct_lidar_odometry (dlo)** [**Code**: https://github.com/vectr-ucla/direct_lidar_odometry](https://github.com/vectr-ucla/direct_lidar_odometry)
