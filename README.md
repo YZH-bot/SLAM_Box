@@ -447,45 +447,9 @@ cd include/modules/icp/build && cmake .. && make -j4
 # 运行
 ./test_icp --source source_path --target target_path
 ```
-<table>
-  <tbody>
-    <tr align="center">
-      <td> 初始状态 </td><td> point2point ICP </td>
-    </tr>
-  </tbody>
-  <tbody>
-    <tr>
-      <td> <p align="center"><img src="include/modules/icp/data/original.png" alt="animated" height="300" /></p> </td>
-      <td> <p align="center"><img src="include/modules/icp/data/icp_p2p.png" alt="animated" height="300" /></p> </td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr>
-      <th colspan="6">Test Results On Datasets</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th rowspan="3" scope="rowgroup">ulhk</th>
-      <th scope="row">ndt_lo</th>
-      <td> <p align="center"><img src="include/modules/icp/data/icp_p2p.png" alt="animated" height="200" /></p> </td>
-      <td> <p align="center"><img src="data/ndt_lo/ulhk/drift.png" alt="animated" height="150" /></p> </td>
-    </tr>
-    <tr>
-      <th scope="row">loosely_lio</th>
-      <td> <p align="center"><img src="data/loose_lio/ulhk/global_map.png" alt="animated" height="200" /></p> </td>
-      <td> <p align="center"><img src="data/loose_lio/ulhk/drift.png" alt="animated" height="200" /></p> </td>
-    </tr>
-    <tr>
-      <th scope="row">dlo</th>
-      <td> <p align="center"><img src="data/dlo/ulhk.png" alt="animated" height="200" /></p> </td>
-      <td> <p align="center"><img src="data/dlo/little_drift.png" alt="animated" height="150" /></p> </td>
-    </tr>
-  </tbody>
-</table>
+| 初始状态 | point2point ICP |
+| ------- | -------------- |
+|<img src="include/modules/icp/data/original.png" height="360">|<img src="include/modules/icp/data/icp_p2p.png" height="360">|
 
 ## Reference
 
