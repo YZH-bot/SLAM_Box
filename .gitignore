@@ -1,5 +1,4 @@
 .vscode
 log
 third_party
-data
 include/modules/icp/build/
