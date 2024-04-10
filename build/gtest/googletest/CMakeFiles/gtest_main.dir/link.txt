@@ -1,0 +1,1 @@
+/usr/bin/g++ -fPIC  -O3 -Wall -shared -Wl,-soname,libgtest_main.so -o ../lib/libgtest_main.so CMakeFiles/gtest_main.dir/src/gtest_main.cc.o  -Wl,-rpath,/home/robot-nuc12/catkin_ws/src/slam/SLAM_Box/build/gtest/lib ../lib/libgtest.so -lpthread 

@@ -1,0 +1,1 @@
+/usr/bin/g++ -fPIC  -O3 -Wall -shared -Wl,-soname,libslam_box.ndt_lo.so -o devel/lib/libslam_box.ndt_lo.so CMakeFiles/slam_box.ndt_lo.dir/src/modules/ndt_lo/direct_ndt_lo.cpp.o CMakeFiles/slam_box.ndt_lo.dir/src/modules/ndt_lo/ndt_3d.cpp.o 

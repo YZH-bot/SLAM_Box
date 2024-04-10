@@ -1,0 +1,1 @@
+/usr/bin/g++ -fPIC  -O3 -Wall -shared -Wl,-soname,libgmock_main.so -o ../lib/libgmock_main.so CMakeFiles/gmock_main.dir/src/gmock_main.cc.o  -Wl,-rpath,/home/robot-nuc12/catkin_ws/src/slam/SLAM_Box/build/gtest/lib ../lib/libgmock.so ../lib/libgtest.so -lpthread 

@@ -12,6 +12,7 @@
     - [GTSAM 构建SLAM优化问题](#gtsam-构建slam优化问题)
       - [GTSAM 如何自定义边](#gtsam-如何自定义边)
       - [以SC-DLO后端优化为例](#以sc-dlo后端优化为例)
+    - [ICP实现及其多线程版本](#icp实现及其多线程版本)
   - [Reference](#reference)
 
 ## 1. 纯ndt里程计
@@ -284,8 +285,8 @@ bool PoseSE3Parameterization::ComputeJacobian(const double *x, double *jacobian)
 [Ceres::Problem](https://blog.csdn.net/weixin_43991178/article/details/100532618)<br>
 [Ceres::LocalParameterization](https://blog.csdn.net/weixin_43991178/article/details/100532618)<br>
 [四元数+平移的表示方式](https://zhuanlan.zhihu.com/p/545458473)<br>
-[FLOAM推导，建议看论文，和代码基本一致](https://zhuanlan.zhihu.com/p/428975763)<br>
 [四元数矩阵与 so(3) 左右雅可比](https://zhuanlan.zhihu.com/p/35041587)<br>
+[FLOAM推导，建议看论文，和代码基本一致](https://zhuanlan.zhihu.com/p/428975763)<br>
 
 ### g2o构建SLAM优化问题
 
@@ -319,7 +320,7 @@ public:
         //      [ sin(q.theta)   cos(q.theta) 0 ]
         const Rot2 &R = q.rotation();
         if (H)
-            (*H) = (gtsam::Matrix(2, 3) << R.c(), -R.s(), 0.0, R.s(), R.c(), 0.0).finished(); // ?: 不应该是单位阵吗
+            (*H) = (gtsam::Matrix(2, 3) << R.c(), -R.s(), 0.0, R.s(), R.c(), 0.0).finished(); // 参见链接：https://gtsam.org/tutorials/intro.html#listing_LocalizationFactor
         return (Vector(2) << q.x() - mx_, q.y() - my_).finished();
     }
 
@@ -363,6 +364,7 @@ int main(int argc, char const *argv[])
     return 0;
 }
 ```
+[边的定义3.2](https://gtsam.org/tutorials/intro.html#listing_LocalizationFactor)
 
 #### 以SC-DLO后端优化为例
 - 初始化
@@ -438,7 +440,31 @@ void runISAM2opt(void)
     updatePoses();
 }
 ```
-
+### ICP实现及其多线程版本
+```bash
+# 编译测试 icp
+cd include/modules/icp/build && cmake .. && make -j4
+# 运行
+./test_icp --source source_path --target target_path
+```
+<table>
+  <thead>
+    <tr>
+      <td> 初始状态 </td><td> point2point ICP </td>
+    </tr>
+  </thead>
+  <!-- <tbody>
+    <tr align="center">
+      <td> 00 </td><td> 01 </td><td> 02 </td><td> 03 </td><td> 05 </td><td> 04 </td>
+    </tr>
+  </tbody> -->
+  <tbody>
+    <tr>
+      <td> <p align="center"><img src="include/modules/icp/data/original.png" alt="animated" height="300" /></p> </td>
+      <td> <p align="center"><img src="include/modules/icp/data/icp_p2p.png" alt="animated" height="300" /></p> </td>
+    </tr>
+  </tbody>
+</table>
 
 ## Reference
 

@@ -3,6 +3,7 @@
 #include <pcl/point_cloud.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <pcl_conversions/pcl_conversions.h>
+#include <pcl/io/pcd_io.h>
 
 #include <Eigen/Core>
 #include <Eigen/Dense>
@@ -132,4 +133,11 @@ inline void SaveMap(const std::string &map_path, CloudPtr global_map)
   global_map->height = 1;
   global_map->resize(global_map->width * global_map->height);
   pcl::io::savePCDFile(map_path, *global_map);
+}
+
+template <typename CloudType>
+void SaveCloudToFile(const std::string &path, CloudType& cloud){
+  cloud.height = 1;
+  cloud.width = cloud.size();
+  pcl::io::savePCDFile(path, cloud);
 }
