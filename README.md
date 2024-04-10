@@ -448,8 +448,8 @@ cd include/modules/icp/build && cmake .. && make -j4
 ./test_icp --source source_path --target target_path
 ```
 | 初始状态 | point2point ICP |
-| ------- | -------------- |
-|<img src="include/modules/icp/data/original.png" height="360">|<img src="include/modules/icp/data/icp_p2p.png" height="360">|
+| :------------------: | :------------------: |
+| <img src="include/modules/icp/data/original.png" height="360"> | <img src="include/modules/icp/data/icp_p2p.png" height="360"> |
 
 ## Reference
 
