@@ -140,7 +140,11 @@ public:
         for (int iter = 0; iter < options_.max_iteration_; iter++)
         {
             // LOG(INFO) << "iteration = " << iter;
-            std::for_each(index.begin(), index.end(), [&](int idx)
+            // doc: 加上 std::execution::par_unseq 并行，会更快 需要链接 TBB 库
+            // doc：https://en.cppreference.com/w/cpp/algorithm/execution_policy_tag_t
+            // doc：https://blog.csdn.net/Vingnir/article/details/135491314
+            // ?: 为什么不把求和放到 for_each 里？ 因为必须确保线程安全
+            std::for_each(std::execution::par_unseq, index.begin(), index.end(), [&](int idx)
                           {
                 // LOG(INFO) << "for_each id = " << idx;
 

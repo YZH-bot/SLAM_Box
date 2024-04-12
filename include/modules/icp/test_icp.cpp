@@ -10,7 +10,7 @@ DEFINE_string(source, "/home/robot-nuc12/catkin_ws/src/slam/SLAM_Box/include/mod
 DEFINE_string(target, "/home/robot-nuc12/catkin_ws/src/slam/SLAM_Box/include/modules/icp/data/kneeling_lady_target.pcd", "target 点云path");
 DEFINE_string(ground_truth_file, "./data/ch7/EPFL/kneeling_lady_pose.txt", "真值Pose");
 
-// doc: 模板偏特化
+// doc: 模板特化
 template void SaveCloudToFile<ICP::CloudType>(const std::string &path, ICP::CloudType &cloud);
 
 int main(int argc, char **argv)

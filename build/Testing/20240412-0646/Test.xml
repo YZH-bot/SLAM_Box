@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Site BuildName="(empty)"
+	BuildStamp="20240412-0646-Experimental"
+	Name="robot-nuc12"
+	Generator="ctest-3.21.4"
+	CompilerName="/usr/bin/g++"
+	CompilerVersion="9.4.0"
+	OSName="Linux"
+	Hostname="robot-nuc12"
+	OSRelease="6.0.9-custom"
+	OSVersion="#1 SMP PREEMPT_DYNAMIC Sat Nov 26 16:25:13 CST 2022"
+	OSPlatform="x86_64"
+	Is64Bits="1"
+	VendorString="GenuineIntel"
+	VendorID="Intel Corporation"
+	FamilyID="6"
+	ModelID="154"
+	ProcessorCacheSize="24576"
+	NumberOfLogicalCPU="20"
+	NumberOfPhysicalCPU="14"
+	TotalVirtualMemory="2047"
+	TotalPhysicalMemory="31677"
+	LogicalProcessorsPerPhysical="1"
+	ProcessorClockFrequency="3692.34"
+	>
+	<Testing>
+		<StartDateTime>Apr 12 14:46 CST</StartDateTime>
+		<StartTestTime>1712904383</StartTestTime>
+		<TestList/>
+		<EndDateTime>Apr 12 14:46 CST</EndDateTime>
+		<EndTestTime>1712904383</EndTestTime>
+		<ElapsedMinutes>0</ElapsedMinutes>
+	</Testing>
+</Site>

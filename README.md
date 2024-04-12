@@ -13,6 +13,10 @@
       - [GTSAM 如何自定义边](#gtsam-如何自定义边)
       - [以SC-DLO后端优化为例](#以sc-dlo后端优化为例)
     - [ICP实现及其多线程版本](#icp实现及其多线程版本)
+      - [运行](#运行)
+      - [多线程版本（基于C++17的新特性 `std::execution::par_unseq` 并行，这是高博书中的写法，比串行快很多）](#多线程版本基于c17的新特性-stdexecutionpar_unseq-并行这是高博书中的写法比串行快很多)
+      - [多线程版本 \[todo\]](#多线程版本-todo)
+      - [效果](#效果)
   - [Reference](#reference)
 
 ## 1. 纯ndt里程计
@@ -441,15 +445,61 @@ void runISAM2opt(void)
 }
 ```
 ### ICP实现及其多线程版本
+#### 运行
 ```bash
 # 编译测试 icp
 cd include/modules/icp/build && cmake .. && make -j4
 # 运行
 ./test_icp --source source_path --target target_path
 ```
+
+#### 多线程版本（基于C++17的新特性 `std::execution::par_unseq` 并行，这是高博书中的写法，比串行快很多）
+```C++
+  // 使用 std::execution::par_unseq 并行策略计算每个有效点的误差和雅可比矩阵
+  std::for_each(std::execution::par_unseq, index.begin(), index.end(), [&](int idx)
+                {
+      // LOG(INFO) << "for_each id = " << idx;
+
+      Vec3d q = source_->points[idx].getVector3fMap().cast<double>();
+      Vec3d q_trans = pose * q;
+      PointType p;
+      p.x = q_trans.x();
+      p.y = q_trans.y();
+      p.z = q_trans.z();
+
+      std::vector<int> nn;
+      std::vector<float> nnDis;
+      // kdtree_->radiusSearch(p, options_.max_nn_distance_, nn, nnDis);
+      kdtree_->nearestKSearch(p, 1, nn, nnDis);
+
+      if(!nn.empty()){
+          Vec3d q_nearest = target_->points[nn[0]].getVector3fMap().cast<double>();
+          effect_pts[idx] = true;
+          double dis2 = (q_nearest - q_trans).squaredNorm();
+          if (dis2 > options_.max_nn_distance_) {
+              // 点离的太远了不要
+              effect_pts[idx] = false;
+              return;
+          }
+
+          // doc: calculate residual
+          Vec3d e = q_nearest - q_trans;
+          Eigen::Matrix<double, 3, 6> J;
+          J.block<3, 3>(0, 0) = pose.so3().matrix() * SO3::hat(q);
+          J.block<3, 3>(0, 3) = -Eigen::Matrix3d::Identity();
+          
+          jacobians[idx] = J;
+          errors[idx] = e;
+      } });
+```
+
+#### 多线程版本 [todo]
+
+#### 效果
 | 初始状态 | point2point ICP |
 | :------------------: | :------------------: |
 | <img src="./include/modules/icp/data/original.png" height="360"> | <img src="./include/modules/icp/data/icp_p2p.png" height="360"> |
+
 
 ## Reference
 
